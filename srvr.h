@@ -13,7 +13,7 @@
 #define NUM_COMMANDS 5
 
 typedef enum {
-    TRUE, FALSE
+    FALSE, TRUE
 } boolean;
 
 typedef enum {
@@ -30,12 +30,12 @@ typedef struct {
 
 typedef struct sockaddr_in addr;
 
-extern int fds, fdc, maxFd, connFd[MAX_CONNECTIONS], numConn, numConnPerClient[MAX_CONNECTIONS];
+extern int fds, fdc, maxFd, connFd[MAX_CONNECTIONS], numConn, numClnts, numConnPerClient[MAX_CONNECTIONS];
 extern fd_set readSetTemp, readSet;
 extern int addrClntSize;
 extern char *msg;
 extern addr clientAddrs[MAX_CONNECTIONS];
-extern addr addrServr;
+extern addr addrServr, addrClient;
 
 boolean addrEq(addr, addr);
 Request getRequest(char *);

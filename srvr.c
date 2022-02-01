@@ -60,6 +60,7 @@ void initServer() {
         exit(EXIT_FAILURE);
     }
     numConn = 0;
+    numClnts = 0;
     maxFd = fds;
     FD_SET(fds, &readSet);
 }
@@ -70,7 +71,7 @@ void receiveData() {
     select(maxFd + 1, &readSetTemp, NULL, NULL, NULL);
     if (FD_ISSET(fds, &readSetTemp))
         addClient();
-    else 
+    else
         for (int k = 0; k < MAX_CONNECTIONS; k++)
             if (FD_ISSET(connFd[k], &readSetTemp)) {
                 fdc = connFd[k];
@@ -82,6 +83,32 @@ void receiveData() {
                 }
                 else receiveCommand();
             }
+}
+
+void addClient() {
+    fdc = accept(fds, (struct sockaddr*)&addrClient, &addrClntSize);
+    for (int i = 0; i < numClnts; i++)
+        if (addrEq(clientAddrs[i], addrClient))
+            if (numConnPerClient[i] == MAX_CONNECTIONS_PER_CLIENT) {
+                printf("max connection per client reached, connection rejected!\n");
+                close(fdc);
+                return;
+            } else {
+                connFd[numConn] = fdc;
+                numConn++;
+                if (fdc > maxFd) maxFd = fdc;
+                FD_SET(fdc, &readSet);
+                numConnPerClient[i]++;
+                return;
+            }
+    connFd[numConn] = fdc;
+    numConn++;
+    if (fdc > maxFd) maxFd = fdc;
+    FD_SET(fdc, &readSet);
+    numConnPerClient[numClnts] = 1;
+    clientAddrs[numClnts] = addrClient;
+    numClnts++;
+    return;
 }
 
 int main(int argc, char **argv){
