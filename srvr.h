@@ -9,7 +9,7 @@
 
 #define MAX_CONNECTIONS 50
 #define MAX_CONNECTIONS_PER_CLIENT 5
-#define TAILLE_MOT 256
+#define SIZE_MSG 256
 #define NUM_COMMANDS 5
 
 typedef enum {
@@ -25,7 +25,7 @@ extern char *commandStr[];
 
 typedef struct {
     command comm;
-    char parametre[TAILLE_MOT];
+    char parametre[SIZE_MSG];
 } Request;
 
 typedef struct sockaddr_in addr;
@@ -39,7 +39,7 @@ extern addr addrServr;
 
 boolean addrEq(addr, addr);
 Request getRequest(char *);
-void addrsInit(addr *);
+void addrsInit();
 void initServer();
 void receiveData();
 void addClient();

@@ -7,7 +7,7 @@ char *commandStr[] = {
 
 int fds, fdc, maxFd, connFd[MAX_CONNECTIONS], numConn, numConnPerClient[MAX_CONNECTIONS];
 fd_set readSetTemp, readSet;
-int addrClntSize;
+int addrClntSize, numBytes;
 char *msg;
 addr clientAddrs[MAX_CONNECTIONS];
 addr addrServr;
@@ -21,7 +21,7 @@ boolean addrEq(addr addrs1, addr addrs2) {
 
 Request getRequest(char *msg) {
     char comm[5];
-    char paramettre[TAILLE_MOT];
+    char paramettre[SIZE_MSG];
     Request req;
     int i;
     for (i = 0; i < strlen(msg); i++)
@@ -30,7 +30,7 @@ Request getRequest(char *msg) {
             i++;
             break;
         }
-    memcpy(paramettre, &(msg[i]), TAILLE_MOT - i);
+    memcpy(paramettre, &(msg[i]), SIZE_MSG - i);
     for (i = 0; i < NUM_COMMANDS; i++)
         if (strcmp(comm, commandStr[i]) == 0)
             req.comm = (command) i;
@@ -64,6 +64,25 @@ void initServer() {
     FD_SET(fds, &readSet);
 }
 
+void receiveData() {
+    FD_ZERO(&readSetTemp);
+    readSetTemp = readSet;
+    select(maxFd + 1, &readSetTemp, NULL, NULL, NULL);
+    if (FD_ISSET(fds, &readSetTemp))
+        addClient();
+    else 
+        for (int k = 0; k < MAX_CONNECTIONS; k++)
+            if (FD_ISSET(connFd[k], &readSetTemp)) {
+                fdc = connFd[k];
+                numBytes = recv(fdc, msg, SIZE_MSG, 0);
+                if (numBytes == 0) deleteClient();
+                else if (numBytes == -1) {
+                    printf("Error while receiving data\n");
+                    exit(EXIT_FAILURE);
+                }
+                else receiveCommand();
+            }
+}
 
 int main(int argc, char **argv){
 
