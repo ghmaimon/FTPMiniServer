@@ -1,4 +1,4 @@
-#include "srvr.h"
+#include "../headers/srvr.h"
 
 char *commandStr[] = {
     "dir", "put", "get",
