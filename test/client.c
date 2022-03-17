@@ -57,7 +57,7 @@ void write_to_file(char *filename, int last){
 
 int main(int argc, char** argv) {
 	struct sockaddr_in addr;
-    inet_aton("127.0.0.1", &(addr.sin_addr));
+  inet_aton("127.0.0.1", &(addr.sin_addr));
 	addr.sin_port = htons(8080);
 	addr.sin_family = AF_INET;
 	memset(&(addr.sin_zero), '0', 8);
